@@ -24,6 +24,8 @@ spec:
         - env:
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: http://discoveryservice:8761/eureka/
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
             - name: JAVA_TOOL_OPTIONS
               value: -Xms128m -Xmx256m
             - name: SPRING_DATASOURCE_PASSWORD

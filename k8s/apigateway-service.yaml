@@ -8,6 +8,7 @@ metadata:
     io.kompose.service: apigateway
   name: apigateway
 spec:
+  type: LoadBalancer
   ports:
     - name: "8765"
       port: 8765
