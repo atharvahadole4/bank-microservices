@@ -54,7 +54,8 @@ pipeline {
                     set PATH=%PATH%;%DOCKER_BIN%
                     set DOCKER_HOST=%DOCKER_HOST%
 
-                    docker compose down
+                    docker compose down --remove-orphans 2>nul || ver >nul
+                    docker rm -f csb-frontend csb-gateway csb-auth csb-customer csb-account csb-discovery csb-mysql 2>nul || ver >nul
                     docker compose up -d --remove-orphans
                 '''
             }
