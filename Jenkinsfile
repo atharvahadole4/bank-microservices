@@ -48,11 +48,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy Services') {
             steps {
                 bat '''
                     set PATH=%PATH%;%DOCKER_BIN%
-                    kubectl --kubeconfig %KUBECONFIG% apply -f k8s/
+                    set DOCKER_HOST=%DOCKER_HOST%
+
+                    docker compose down
+                    docker compose up -d --remove-orphans
                 '''
             }
         }
@@ -61,7 +64,9 @@ pipeline {
             steps {
                 bat '''
                     set PATH=%PATH%;%DOCKER_BIN%
-                    kubectl --kubeconfig %KUBECONFIG% get pods,svc
+                    set DOCKER_HOST=%DOCKER_HOST%
+
+                    docker compose ps
                 '''
             }
         }
