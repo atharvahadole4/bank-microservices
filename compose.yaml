@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: csb
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./mysql-init:/docker-entrypoint-initdb.d
     healthcheck:
