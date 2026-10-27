@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: BANK-GATEWAY
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin RETAIN_UNIQUE
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "Content-Type"
+              - "Authorization"
+            allowCredentials: false
+      routes:
+        - id: customer-service
+          uri: lb://CustomerService
+          predicates:
+            - Path=/api/v1/customers/**
+          filters:
+            - AuthenticationFilter
+
+        - id: account-service
+          uri: lb://AccountService
+          predicates:
+            - Path=/api/v1/accounts/**, /api/v1/savings/**
+          filters:
+            - AuthenticationFilter
+
+        - id: authentication-service
+          uri: lb://AUTHENTICATION-SERVICE
+          predicates:
+            - Path=/auth/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discoveryservice:8761/eureka/

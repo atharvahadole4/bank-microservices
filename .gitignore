@@ -1,0 +1,21 @@
+# Build outputs
+target/
+**/target/
+dist/
+**/dist/
+node_modules/
+**/node_modules/
+
+# IDE & Editor files
+.idea/
+.vscode/
+.project
+.classpath
+.factorypath
+.settings/
+*.iml
+
+# Logs & temp
+*.log
+.DS_Store
+Thumbs.db

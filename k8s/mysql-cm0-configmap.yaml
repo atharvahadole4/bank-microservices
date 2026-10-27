@@ -1,0 +1,70 @@
+apiVersion: v1
+data:
+  init.sql: |
+    -- Initialize CSB Bank Database
+    CREATE DATABASE IF NOT EXISTS csb;
+    USE csb;
+
+    -- Customers Table
+    CREATE TABLE IF NOT EXISTS customers (
+        customer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        mobile VARCHAR(10) NOT NULL,
+        date_of_birth DATE NOT NULL,
+        gender VARCHAR(20) NOT NULL,
+        city VARCHAR(60) NOT NULL
+    );
+
+    -- Savings Accounts Table
+    CREATE TABLE IF NOT EXISTS savings (
+        accountno BIGINT AUTO_INCREMENT PRIMARY KEY,
+        customer_id BIGINT NOT NULL,
+        opening_date DATE NOT NULL,
+        balance DOUBLE NOT NULL
+    );
+
+    -- User Credentials Table (for authentication)
+    CREATE TABLE IF NOT EXISTS UserCredential (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(100) NOT NULL,
+        password VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS user_credential (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(100) NOT NULL,
+        password VARCHAR(255) NOT NULL
+    );
+
+    -- Seed Customers
+    INSERT INTO customers (customer_id, name, email, mobile, date_of_birth, gender, city) VALUES
+    (1, 'John Doe', 'john.doe@example.com', '9876543210', '1995-05-15', 'MALE', 'New York'),
+    (2, 'Jane Smith', 'jane.smith@example.com', '9876543211', '1998-08-22', 'FEMALE', 'Los Angeles'),
+    (3, 'Amit Kumar', 'amit.kumar@example.com', '9876543212', '1992-12-10', 'MALE', 'Mumbai'),
+    (4, 'Priya Sharma', 'priya.sharma@example.com', '9876543213', '1996-03-25', 'FEMALE', 'Bangalore')
+    ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+    -- Seed Savings Accounts
+    INSERT INTO savings (accountno, customer_id, opening_date, balance) VALUES
+    (1001, 1, '2023-01-10', 25000.00),
+    (1002, 2, '2023-03-15', 50000.50),
+    (1003, 3, '2023-06-20', 75000.00),
+    (1004, 4, '2023-09-05', 120000.00)
+    ON DUPLICATE KEY UPDATE balance=VALUES(balance);
+
+    -- Seed Default Admin (Password: admin123)
+    INSERT INTO UserCredential (id, name, email, password) VALUES
+    (1, 'admin', 'admin@example.com', '$2a$10$uVPkE3kDfdB32z3uKHmI8.ggMiUl69At5h2DHea94.VRIdd5PRqRS')
+    ON DUPLICATE KEY UPDATE password=VALUES(password);
+
+    INSERT INTO user_credential (id, name, email, password) VALUES
+    (1, 'admin', 'admin@example.com', '$2a$10$uVPkE3kDfdB32z3uKHmI8.ggMiUl69At5h2DHea94.VRIdd5PRqRS')
+    ON DUPLICATE KEY UPDATE password=VALUES(password);
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: mysql
+  name: mysql-cm0

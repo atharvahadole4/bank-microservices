@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\Microsoft\AppData\Local\Programs\DockerDesktop\resources\bin\kompose.exe convert -f docker-compose.yml -o k8s/
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: discoveryservice
+  name: discoveryservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: discoveryservice
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\Microsoft\AppData\Local\Programs\DockerDesktop\resources\bin\kompose.exe convert -f docker-compose.yml -o k8s/
+        kompose.version: 1.35.0 (9532ceef3)
+      labels:
+        io.kompose.service: discoveryservice
+    spec:
+      containers:
+        - env:
+            - name: JAVA_TOOL_OPTIONS
+              value: -Xms128m -Xmx256m
+          image: discoveryservice:latest
+          imagePullPolicy: IfNotPresent
+          name: csb-discovery
+          ports:
+            - containerPort: 8761
+              protocol: TCP
+      restartPolicy: Always
