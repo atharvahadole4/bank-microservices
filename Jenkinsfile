@@ -43,7 +43,7 @@ pipeline {
                 bat '''
                     set PATH=%PATH%;%DOCKER_BIN%
                     set DOCKER_HOST=%DOCKER_HOST%
-                    docker compose build
+                    docker compose -f docker-compose.yml build
                 '''
             }
         }
@@ -54,9 +54,10 @@ pipeline {
                     set PATH=%PATH%;%DOCKER_BIN%
                     set DOCKER_HOST=%DOCKER_HOST%
 
-                    docker compose down --remove-orphans 2>nul || ver >nul
+                    rem Instantly force-remove existing containers so stopping never hangs
                     docker rm -f csb-frontend csb-gateway csb-auth csb-customer csb-account csb-discovery csb-mysql 2>nul || ver >nul
-                    docker compose up -d --remove-orphans
+                    docker compose -f docker-compose.yml down -t 1 --remove-orphans 2>nul || ver >nul
+                    docker compose -f docker-compose.yml up -d --remove-orphans
                 '''
             }
         }
@@ -67,7 +68,8 @@ pipeline {
                     set PATH=%PATH%;%DOCKER_BIN%
                     set DOCKER_HOST=%DOCKER_HOST%
 
-                    docker compose ps
+                    docker compose -f docker-compose.yml ps
+                    docker ps --filter "name=csb-"
                 '''
             }
         }
