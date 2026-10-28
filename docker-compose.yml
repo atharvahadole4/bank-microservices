@@ -5,6 +5,8 @@ services:
     image: mysql:8.0
     container_name: csb-mysql
     restart: unless-stopped
+    init: true
+    stop_grace_period: 2s
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: csb
@@ -26,6 +28,8 @@ services:
       context: ./DiscoveryService
     image: discoveryservice:latest
     container_name: csb-discovery
+    init: true
+    stop_grace_period: 2s
     environment:
       JAVA_TOOL_OPTIONS: "-Xms128m -Xmx256m"
     ports:
@@ -39,6 +43,8 @@ services:
       context: ./AccountService
     image: accountservice:latest
     container_name: csb-account
+    init: true
+    stop_grace_period: 2s
     environment:
       JAVA_TOOL_OPTIONS: "-Xms128m -Xmx256m"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/csb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
@@ -61,6 +67,8 @@ services:
       context: ./CustomerService
     image: customer-service:latest
     container_name: csb-customer
+    init: true
+    stop_grace_period: 2s
     environment:
       JAVA_TOOL_OPTIONS: "-Xms128m -Xmx256m"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/csb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
@@ -83,6 +91,8 @@ services:
       context: ./AuthService
     image: auth-service:latest
     container_name: csb-auth
+    init: true
+    stop_grace_period: 2s
     environment:
       JAVA_TOOL_OPTIONS: "-Xms128m -Xmx256m"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/csb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
@@ -105,6 +115,8 @@ services:
       context: ./ApiGateway
     image: api-gateway:latest
     container_name: csb-gateway
+    init: true
+    stop_grace_period: 2s
     environment:
       JAVA_TOOL_OPTIONS: "-Xms128m -Xmx256m"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discoveryservice:8761/eureka/
@@ -122,6 +134,8 @@ services:
       context: ./Frontend
     image: bank-frontend:latest
     container_name: csb-frontend
+    init: true
+    stop_grace_period: 2s
     ports:
       - "3000:80"
     depends_on:
