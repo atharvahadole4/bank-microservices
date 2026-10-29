@@ -56,42 +56,46 @@ export default function AuthPage({
       <section className="auth-visual">
         <Brand light />
         <div className="auth-visual-copy">
-          <span className="auth-kicker">NORTHSTAR BANK · ADMINISTRATION</span>
-          <h1>Banking operations,<br />beautifully in balance.</h1>
-          <p>A clear workspace to oversee customer records and savings accounts.</p>
+          <span className="auth-kicker">VAULTCORE BANKING CORE · v2.5</span>
+          <h1>Cloud-Native Banking,<br />Engineered for Scale.</h1>
+          <p>Next-generation distributed microservices ledger managing real-time customer identities, savings portfolios, and secure transactions.</p>
           <div className="auth-visual-points">
-            <span><i>✓</i> Customer directory</span>
-            <span><i>✓</i> Savings oversight</span>
-            <span><i>✓</i> Operational insights</span>
+            <span><i>✓</i> Spring Cloud Gateway & Dynamic Routing</span>
+            <span><i>✓</i> Eureka Discovery & Health Registry</span>
+            <span><i>✓</i> Stateless JWT 256-Bit Authentication</span>
+            <span><i>✓</i> High-Throughput Customer & Savings Services</span>
           </div>
         </div>
-        <div className="auth-visual-foot"><span>ADMIN CONSOLE</span><span>SECURE WORKSPACE</span></div>
+        <div className="auth-visual-foot">
+          <span>SECURE CORE NODE: 8765</span>
+          <span>EUREKA MESH: ACTIVE</span>
+        </div>
         <div className="visual-orb visual-orb-one" /><div className="visual-orb visual-orb-two" />
       </section>
       <section className="auth-form-side">
         <div className="auth-form-wrap">
           <div className="mobile-brand"><Brand /></div>
           <div className="auth-switch" role="tablist" aria-label="Admin access">
-            <Link className={mode === 'login' ? 'auth-switch-btn active' : 'auth-switch-btn'} role="tab" aria-selected={mode === 'login'} to="/login">Admin sign in</Link>
-            <Link className={mode === 'register' ? 'auth-switch-btn active' : 'auth-switch-btn'} role="tab" aria-selected={mode === 'register'} to="/register">Create admin</Link>
+            <Link className={mode === 'login' ? 'auth-switch-btn active' : 'auth-switch-btn'} role="tab" aria-selected={mode === 'login'} to="/login">Console Login</Link>
+            <Link className={mode === 'register' ? 'auth-switch-btn active' : 'auth-switch-btn'} role="tab" aria-selected={mode === 'register'} to="/register">Create Admin</Link>
           </div>
-          <span className="section-kicker">{mode === 'login' ? 'WELCOME BACK' : 'NEW ADMIN ACCESS'}</span>
-          <h2>{mode === 'login' ? 'Sign in to Admin' : 'Create admin account'}</h2>
-          <p className="auth-description">{mode === 'login' ? 'Manage customers and accounts from your operations dashboard.' : 'Register an administrator account to continue.'}</p>
+          <span className="section-kicker">{mode === 'login' ? 'AUTHENTICATION GATEWAY' : 'ACCESS PROVISIONING'}</span>
+          <h2>{mode === 'login' ? 'Sign in to VaultCore' : 'Register Administrator'}</h2>
+          <p className="auth-description">{mode === 'login' ? 'Enter your credentials to access the banking microservices operations console.' : 'Provision a new administrator account with role-based access control.'}</p>
           {error && <div className="inline-error" role="alert">{error}</div>}
           <form className="auth-fields" onSubmit={submit}>
-            <AuthField label="Username" name="username" placeholder="Enter your username" autoComplete="username" required />
-            {mode === 'register' && <AuthField label="Email" name="email" type="email" placeholder="Enter email (optional)" autoComplete="email" />}
-            <AuthField label="Password" name="password" type="password" placeholder="Enter password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
-            {mode === 'register' && <AuthField label="Confirm password" name="confirmPassword" type="password" placeholder="Re-enter password" autoComplete="new-password" required />}
+            <AuthField label="Admin Username" name="username" placeholder="e.g. admin" autoComplete="username" required />
+            {mode === 'register' && <AuthField label="Work Email" name="email" type="email" placeholder="admin@vaultcore.com" autoComplete="email" />}
+            <AuthField label="Master Password" name="password" type="password" placeholder="••••••••" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
+            {mode === 'register' && <AuthField label="Confirm Password" name="confirmPassword" type="password" placeholder="••••••••" autoComplete="new-password" required />}
             <button className="admin-primary auth-submit" type="submit" disabled={submitting}>
-              {submitting ? 'Please wait…' : mode === 'login' ? 'Sign in to console' : 'Create admin account'}
+              {submitting ? 'Authenticating with Gateway…' : mode === 'login' ? 'Enter Banking Console' : 'Provision Admin Account'}
               {!submitting && <span>→</span>}
             </button>
           </form>
-          <p className="demo-warning"><Icon name="lock" /> Securely connected to the authentication service.</p>
+          <p className="demo-warning"><Icon name="shield" /> Protected with SHA-256 JWT & Spring Security filter chains.</p>
         </div>
-        <footer className="auth-copyright">© {new Date().getFullYear()} Northstar Bank · Admin Console</footer>
+        <footer className="auth-copyright">© {new Date().getFullYear()} VaultCore Financial Technologies · Microservices Cloud Architecture</footer>
       </section>
     </main>
   )

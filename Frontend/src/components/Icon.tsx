@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 
 const paths: Record<string, ReactNode> = {
   bank: <><path d="M3 9h18L12 4 3 9Z" /><path d="M5 10v7m4-7v7m6-7v7m4-7v7M3 19h18M2 21h20" /></>,
+  vault: <><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="2" /><path d="M12 7v2m0 6v2m-5-5h2m6 0h2" /></>,
+  shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
   grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" /></>,
   users: <><circle cx="9" cy="8" r="3" /><path d="M3.5 19c.4-3 2.3-4.5 5.5-4.5s5.1 1.5 5.5 4.5M16 5.5a3 3 0 0 1 0 5.8m1 3.2c2.2.5 3.4 2 3.7 4.5" /></>,
   wallet: <><rect x="3.5" y="5.5" width="17" height="14" rx="2.5" /><path d="M3.5 9h17m-5 5h2M6.5 5.5V4.7A1.7 1.7 0 0 1 8.2 3h10.3" /></>,

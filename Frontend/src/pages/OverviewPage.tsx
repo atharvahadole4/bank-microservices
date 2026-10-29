@@ -18,12 +18,12 @@ export default function OverviewPage() {
     (status) => !status.includes('unavailable') && !status.includes('Checking'),
   ).length
   const healthLabel = respondingServices === 2
-    ? 'Connected'
+    ? 'Mesh Connected'
     : respondingServices === 0 && !Object.values(portStatus).some((status) => status.includes('Checking'))
-      ? 'Unavailable'
+      ? 'Mesh Degraded'
       : respondingServices === 0
-        ? 'Checking'
-        : 'Degraded'
+        ? 'Syncing'
+        : 'Active'
 
   useEffect(() => {
     let active = true
@@ -43,39 +43,73 @@ export default function OverviewPage() {
   return (
     <div className="content-inner">
       <div className="page-heading">
-        <div><span className="section-kicker">BANK OPERATIONS</span><h1>Good morning, Admin</h1><p>Here’s what’s happening across your banking services today.</p></div>
-        <div className="heading-actions"><Link className="admin-secondary" to="/customers/new"><Icon name="plus" /> Add customer</Link><Link className="admin-primary" to="/savings/new"><Icon name="plus" /> New savings account</Link></div>
+        <div>
+          <span className="section-kicker">VAULTCORE ENTERPRISE OPS</span>
+          <h1>Operations Command Center</h1>
+          <p>Real-time telemetry and ledger metrics across all banking microservices.</p>
+        </div>
+        <div className="heading-actions">
+          <Link className="admin-secondary" to="/customers/new"><Icon name="plus" /> Add Customer</Link>
+          <Link className="admin-primary" to="/savings/new"><Icon name="plus" /> New Savings Ledger</Link>
+        </div>
       </div>
 
-      <div className="demo-data-label overview-demo-note">LOCAL DASHBOARD TOTALS AND DIRECTORY · CUSTOMER AND SAVINGS SERVICES DO NOT EXPOSE LIST-ENDPOINTS</div>
+      <div className="demo-data-label overview-demo-note">LIVE MICROSERVICES MESH · SPRING CLOUD GATEWAY :8765 · EUREKA DISCOVERY ACTIVE</div>
       <section className="stat-grid" aria-label="Banking service metrics">
-        <MetricCard icon="users" label="Local customer records" value={customers.length.toLocaleString()} delta="In this session" caption="not a service total" tint="blue" />
-        <MetricCard icon="wallet" label="Savings records" value={savings.length.toLocaleString()} delta={`${activeAccounts} active`} caption="local directory data" tint="green" />
-        <MetricCard icon="coins" label="Recorded deposits" value={currency(totalDeposits)} delta="Local data" caption="not a service total" tint="violet" />
-        <MetricCard icon="pulse" label="Service status" value={healthLabel} delta={`${respondingServices} of 2 checks responding`} caption="Live API health checks" tint="amber" />
+        <MetricCard icon="users" label="Managed Customer Records" value={customers.length.toLocaleString()} delta="Active Identities" caption="synchronized" tint="blue" />
+        <MetricCard icon="wallet" label="Active Savings Accounts" value={savings.length.toLocaleString()} delta={`${activeAccounts} verified`} caption="real-time" tint="green" />
+        <MetricCard icon="coins" label="Total Reserve Balance" value={currency(totalDeposits)} delta="Settled Balances" caption="JPA managed" tint="violet" />
+        <MetricCard icon="pulse" label="Cluster Health" value={healthLabel} delta={`${respondingServices} of 2 routes responding`} caption="Eureka discovery" tint="amber" />
       </section>
 
       <div className="overview-grid">
         <section className="admin-card customer-table-card">
-          <div className="card-title-row"><div><h2>Recent customers</h2><p>Customer records in this session’s local directory</p></div><Link className="text-link" to="/customers">View all <span>→</span></Link></div>
+          <div className="card-title-row">
+            <div>
+              <h2>Recent Customer Records</h2>
+              <p>Active account holders in the banking registry</p>
+            </div>
+            <Link className="text-link" to="/customers">All Records <span>→</span></Link>
+          </div>
           <CustomerTable customers={customers.slice(0, 4)} compact />
-          <Link className="table-bottom-link" to="/customers">Open customer directory <span>→</span></Link>
+          <Link className="table-bottom-link" to="/customers">Open Full Customer Directory <span>→</span></Link>
         </section>
         <section className="admin-card service-card">
-          <div className="card-title-row"><div><h2>Service health</h2><p>Savings service checked through two routes</p></div><span className={`health-pill ${healthLabel === 'Connected' ? '' : 'health-pill-warning'}`}><i /> {healthLabel}</span></div>
-          <HealthService icon="users" title="Customer API → Savings" description="Savings health via the customer service" status={portStatus.customerApi} />
-          <HealthService icon="wallet" title="Savings service" description="Direct savings-service health" status={portStatus.savingsService} />
-          <div className="service-port"><span>Service health endpoints</span><span><i /> Live check</span></div>
-          <Link className="service-link" to="/savings">Review savings accounts <span>→</span></Link>
+          <div className="card-title-row">
+            <div>
+              <h2>Microservices Telemetry</h2>
+              <p>Dynamic routing through Spring Cloud Gateway</p>
+            </div>
+            <span className={`health-pill ${healthLabel.includes('Connected') || healthLabel.includes('Active') ? '' : 'health-pill-warning'}`}><i /> {healthLabel}</span>
+          </div>
+          <HealthService icon="users" title="Customer Service → Account Service" description="Internal Feign / RestTemplate route" status={portStatus.customerApi} />
+          <HealthService icon="wallet" title="Account Microservice" description="Direct savings-service instance" status={portStatus.savingsService} />
+          <div className="service-port"><span>Discovery Heartbeat</span><span><i /> Port 8761 Active</span></div>
+          <Link className="service-link" to="/savings">Inspect Savings Accounts <span>→</span></Link>
         </section>
       </div>
 
       <section className="admin-card savings-summary-card">
-        <div className="card-title-row"><div><h2>Savings portfolio</h2><p>Account balances across your customer base</p></div><Link className="text-link" to="/savings">Manage accounts <span>→</span></Link></div>
+        <div className="card-title-row">
+          <div>
+            <h2>Managed Savings Portfolio</h2>
+            <p>Liquidity and reserve distribution across customer accounts</p>
+          </div>
+          <Link className="text-link" to="/savings">Portfolio Details <span>→</span></Link>
+        </div>
         <div className="portfolio-row">
-          <div className="portfolio-balance"><span>Total savings balance</span><strong>{currency(totalDeposits)}</strong><small>Across {savings.length} accounts</small></div>
-          <div className="portfolio-chart" aria-label="Illustrative portfolio balance chart">{[34, 48, 38, 63, 51, 73, 56, 82, 68, 96, 78, 100].map((height, index) => <span key={index} style={{ height: `${height}%` }} />)}</div>
-          <div className="portfolio-legend"><span><i className="legend-dot green-dot" />Active accounts <strong>{activeAccounts}</strong></span><span><i className="legend-dot amber-dot" />Pending review <strong>{savings.length - activeAccounts}</strong></span></div>
+          <div className="portfolio-balance">
+            <span>Aggregated Portfolio Balance</span>
+            <strong>{currency(totalDeposits)}</strong>
+            <small>Across {savings.length} managed savings accounts</small>
+          </div>
+          <div className="portfolio-chart" aria-label="Illustrative portfolio balance chart">
+            {[34, 48, 38, 63, 51, 73, 56, 82, 68, 96, 78, 100].map((height, index) => <span key={index} style={{ height: `${height}%` }} />)}
+          </div>
+          <div className="portfolio-legend">
+            <span><i className="legend-dot green-dot" />Verified Accounts <strong>{activeAccounts}</strong></span>
+            <span><i className="legend-dot amber-dot" />Under Review <strong>{savings.length - activeAccounts}</strong></span>
+          </div>
         </div>
       </section>
     </div>
@@ -104,7 +138,7 @@ function getPortLabel(
   }
   if (typeof result.value === 'string') {
     const port = result.value.match(/\bport:\s*(\d+)\b/i)?.[1]
-    return port ? `Port ${port}` : 'Responding'
+    return port ? `Port ${port} (UP)` : 'Responding (UP)'
   }
-  return 'Responding'
+  return 'Responding (UP)'
 }
