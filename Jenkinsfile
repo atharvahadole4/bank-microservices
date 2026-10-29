@@ -48,29 +48,30 @@ pipeline {
             }
         }
 
-        stage('Deploy Services') {
+        stage('Deploy to Kubernetes') {
             options {
                 timeout(time: 5, unit: 'MINUTES')
             }
             steps {
                 bat '''
                     set PATH=%PATH%;%DOCKER_BIN%
-                    set DOCKER_HOST=%DOCKER_HOST%
+                    set KUBECONFIG=%KUBECONFIG%
 
-                    docker compose -f docker-compose.yml down -t 1 --remove-orphans 2>nul || ver >nul
-                    docker compose -f docker-compose.yml up -d --remove-orphans
+                    kubectl apply -f k8s/
                 '''
             }
         }
 
-        stage('Verify Deployment Status') {
+        stage('Verify Kubernetes Cluster & LoadBalancing') {
             steps {
                 bat '''
                     set PATH=%PATH%;%DOCKER_BIN%
-                    set DOCKER_HOST=%DOCKER_HOST%
+                    set KUBECONFIG=%KUBECONFIG%
 
-                    docker compose -f docker-compose.yml ps
-                    docker ps --filter "name=csb-"
+                    kubectl get nodes -o wide
+                    kubectl get pods -o wide
+                    kubectl get services
+                    kubectl get endpoints
                 '''
             }
         }
@@ -78,7 +79,7 @@ pipeline {
 
     post {
         success {
-            echo 'Banking Microservices Pipeline completed successfully!'
+            echo 'Banking Microservices Kubernetes Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed. Please check stage logs for details.'

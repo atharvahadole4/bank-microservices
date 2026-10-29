@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: C:\Users\Microsoft\AppData\Local\Programs\DockerDesktop\resources\bin\kompose.exe convert -f docker-compose.yml -o k8s/
-    kompose.version: 1.35.0 (9532ceef3)
   labels:
     io.kompose.service: mysql
   name: mysql
@@ -16,9 +13,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: C:\Users\Microsoft\AppData\Local\Programs\DockerDesktop\resources\bin\kompose.exe convert -f docker-compose.yml -o k8s/
-        kompose.version: 1.35.0 (9532ceef3)
       labels:
         io.kompose.service: mysql
     spec:
@@ -29,6 +23,7 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               value: root
           image: mysql:8.0
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             exec:
               command:
@@ -39,10 +34,10 @@ spec:
                 - -u
                 - root
                 - -proot
-            failureThreshold: 10
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
+            failureThreshold: 20
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
           name: csb-mysql
           ports:
             - containerPort: 3306
