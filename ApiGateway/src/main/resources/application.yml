@@ -12,6 +12,13 @@ spring:
             allowedOrigins:
               - "http://localhost:5173"
               - "http://localhost:3000"
+              - "http://localhost:30000"
+              - "http://127.0.0.1:5173"
+              - "http://127.0.0.1:3000"
+              - "http://127.0.0.1:30000"
+            allowedOriginPatterns:
+              - "http://localhost:*"
+              - "http://127.0.0.1:*"
             allowedMethods:
               - GET
               - POST
@@ -19,8 +26,7 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders:
-              - "Content-Type"
-              - "Authorization"
+              - "*"
             allowCredentials: false
       routes:
         - id: customer-service
