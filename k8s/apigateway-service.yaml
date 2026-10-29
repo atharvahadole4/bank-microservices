@@ -5,10 +5,11 @@ metadata:
     io.kompose.service: apigateway
   name: apigateway
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - name: "8765"
       port: 8765
       targetPort: 8765
+      nodePort: 30765
   selector:
     io.kompose.service: apigateway
