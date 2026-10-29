@@ -30,21 +30,21 @@ spring:
             allowCredentials: false
       routes:
         - id: customer-service
-          uri: lb://CustomerService
+          uri: ${CUSTOMER_SERVICE_URL:http://customerservice:8081}
           predicates:
             - Path=/api/v1/customers/**
           filters:
             - AuthenticationFilter
 
         - id: account-service
-          uri: lb://AccountService
+          uri: ${ACCOUNT_SERVICE_URL:http://accountservice:8082}
           predicates:
             - Path=/api/v1/accounts/**, /api/v1/savings/**
           filters:
             - AuthenticationFilter
 
         - id: authentication-service
-          uri: lb://AUTHENTICATION-SERVICE
+          uri: ${AUTH_SERVICE_URL:http://authservice:9898}
           predicates:
             - Path=/auth/**
 
