@@ -5,11 +5,14 @@ metadata:
     io.kompose.service: frontend
   name: frontend
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
-    - name: "3000"
+    - name: "http"
       port: 3000
       targetPort: 80
       nodePort: 30000
+    - name: "nodeport"
+      port: 30000
+      targetPort: 80
   selector:
     io.kompose.service: frontend

@@ -5,7 +5,7 @@ metadata:
     io.kompose.service: discoveryservice
   name: discoveryservice
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: "8761"
       port: 8761
