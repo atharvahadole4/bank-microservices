@@ -19,11 +19,16 @@ spec:
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: http://discoveryservice:8761/eureka/
             - name: JAVA_TOOL_OPTIONS
-              value: -Xms128m -Xmx256m
+              value: -XX:TieredStopAtLevel=1 -Xms128m -Xmx256m
           image: api-gateway:latest
           imagePullPolicy: IfNotPresent
           name: csb-gateway
           ports:
             - containerPort: 8765
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8765
+            initialDelaySeconds: 10
+            periodSeconds: 3
       restartPolicy: Always

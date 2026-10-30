@@ -27,7 +27,7 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: JAVA_TOOL_OPTIONS
-              value: -Xms128m -Xmx256m
+              value: -XX:TieredStopAtLevel=1 -Xms128m -Xmx256m
             - name: SPRING_DATASOURCE_PASSWORD
               value: root
             - name: SPRING_DATASOURCE_URL
@@ -40,4 +40,9 @@ spec:
           ports:
             - containerPort: 9898
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 9898
+            initialDelaySeconds: 15
+            periodSeconds: 3
       restartPolicy: Always

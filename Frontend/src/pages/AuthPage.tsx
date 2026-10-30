@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Brand from '../components/Brand'
 import Icon from '../components/Icon'
-import { getAuthToken, registerAdmin, validateAuthToken } from '../services/authService'
+import { getAuthToken, registerAdmin, validateAuthToken, checkGatewayOnline } from '../services/authService'
 import type { Admin } from '../types/banking'
 
 export default function AuthPage({
@@ -14,7 +14,22 @@ export default function AuthPage({
 }) {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [gatewayOnline, setGatewayOnline] = useState<boolean | null>(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    let mounted = true
+    const check = async () => {
+      const ok = await checkGatewayOnline()
+      if (mounted) setGatewayOnline(ok)
+    }
+    check()
+    const timer = setInterval(check, 3500)
+    return () => {
+      mounted = false
+      clearInterval(timer)
+    }
+  }, [])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -67,7 +82,7 @@ export default function AuthPage({
           </div>
         </div>
         <div className="auth-visual-foot">
-          <span>SECURE CORE NODE: 8765</span>
+          <span>SECURE CORE NODE: 8765 {gatewayOnline === true ? '· ONLINE ✓' : gatewayOnline === false ? '· WARMING UP…' : ''}</span>
           <span>EUREKA MESH: ACTIVE</span>
         </div>
         <div className="visual-orb visual-orb-one" /><div className="visual-orb visual-orb-two" />
@@ -82,6 +97,22 @@ export default function AuthPage({
           <span className="section-kicker">{mode === 'login' ? 'AUTHENTICATION GATEWAY' : 'ACCESS PROVISIONING'}</span>
           <h2>{mode === 'login' ? 'Sign in to VaultCore' : 'Register Administrator'}</h2>
           <p className="auth-description">{mode === 'login' ? 'Enter your credentials to access the banking microservices operations console.' : 'Provision a new administrator account with role-based access control.'}</p>
+          {gatewayOnline === false && !error && (
+            <div className="gateway-warmup-notice" style={{
+              background: 'rgba(234, 179, 8, 0.1)',
+              border: '1px solid rgba(234, 179, 8, 0.3)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              color: '#ca8a04',
+              fontSize: '0.85rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span>⏳</span> Kubernetes backend microservices are warming up. Gateway will be ready in a moment...
+            </div>
+          )}
           {error && <div className="inline-error" role="alert">{error}</div>}
           <form className="auth-fields" onSubmit={submit}>
             <AuthField label="Admin Username" name="username" placeholder="e.g. admin" autoComplete="username" required />

@@ -23,7 +23,7 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: JAVA_TOOL_OPTIONS
-              value: -Xms128m -Xmx256m -Deureka.client.serviceUrl.defaultZone=http://discoveryservice:8761/eureka/
+              value: -XX:TieredStopAtLevel=1 -Xms128m -Xmx256m -Deureka.client.serviceUrl.defaultZone=http://discoveryservice:8761/eureka/
             - name: SPRING_DATASOURCE_PASSWORD
               value: root
             - name: SPRING_DATASOURCE_URL
@@ -36,4 +36,9 @@ spec:
           ports:
             - containerPort: 8082
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 3
       restartPolicy: Always

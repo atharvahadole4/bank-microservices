@@ -22,19 +22,38 @@ function getErrorMessage(payload: unknown, fallback: string) {
   return fallback
 }
 
-async function request(path: string, init?: RequestInit) {
-  let response: Response
-  try {
-    response = await fetch(`${AUTH_BASE_URL}${path}`, {
-      ...init,
-      headers: {
-        Accept: 'application/json, text/plain',
-        ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
-        ...init?.headers,
-      },
-    })
-  } catch {
-    throw new Error(`Unable to connect to the authentication service at ${AUTH_BASE_URL}.`)
+async function request(path: string, init?: RequestInit, retries = 2, delayMs = 1200) {
+  let response: Response | undefined
+  let networkFailed = false
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      networkFailed = false
+      response = await fetch(`${AUTH_BASE_URL}${path}`, {
+        ...init,
+        headers: {
+          Accept: 'application/json, text/plain',
+          ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+          ...init?.headers,
+        },
+      })
+      // If service is temporarily warming up (502, 503, 504), wait and retry
+      if ((response.status === 502 || response.status === 503 || response.status === 504) && attempt < retries) {
+        await new Promise(res => setTimeout(res, delayMs))
+        continue
+      }
+      break
+    } catch {
+      networkFailed = true
+      if (attempt < retries) {
+        await new Promise(res => setTimeout(res, delayMs))
+        continue
+      }
+    }
+  }
+
+  if (networkFailed || !response) {
+    throw new Error(`Unable to connect to the banking core at ${AUTH_BASE_URL}. The services may be initializing, please try again in a few moments.`)
   }
 
   const responseText = await response.text()
@@ -97,5 +116,17 @@ export async function validateAuthToken(token: string) {
   const payload = await request(`/auth/validate?${query.toString()}`)
   if (getResponseText(payload) !== 'Token is valid') {
     throw new Error('The authentication service did not confirm the token.')
+  }
+}
+
+export async function checkGatewayOnline(): Promise<boolean> {
+  try {
+    const res = await fetch(`${AUTH_BASE_URL}/actuator/health`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    })
+    return res.status < 500
+  } catch {
+    return false
   }
 }

@@ -25,20 +25,40 @@ async function request<T>(
   path: string,
   token: string,
   options: RequestInit = {},
+  retries = 2,
+  delayMs = 1200,
 ): Promise<T> {
-  let response: Response
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      ...options,
-      headers: {
-        Accept: 'application/json, text/plain',
-        Authorization: `Bearer ${token}`,
-        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-        ...options.headers,
-      },
-    })
-  } catch {
-    throw new Error(`Unable to connect to the banking gateway at ${API_BASE_URL}.`)
+  let response: Response | undefined
+  let networkFailed = false
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      networkFailed = false
+      response = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        headers: {
+          Accept: 'application/json, text/plain',
+          Authorization: `Bearer ${token}`,
+          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+          ...options.headers,
+        },
+      })
+      if ((response.status === 502 || response.status === 503 || response.status === 504) && attempt < retries) {
+        await new Promise(res => setTimeout(res, delayMs))
+        continue
+      }
+      break
+    } catch {
+      networkFailed = true
+      if (attempt < retries) {
+        await new Promise(res => setTimeout(res, delayMs))
+        continue
+      }
+    }
+  }
+
+  if (networkFailed || !response) {
+    throw new Error(`Unable to connect to the banking gateway at ${API_BASE_URL}. The services may be initializing, please try again in a moment.`)
   }
 
   const text = await response.text()
